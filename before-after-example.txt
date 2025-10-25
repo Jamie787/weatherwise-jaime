@@ -1,0 +1,346 @@
+Before-After Example: Improving Code Quality Through Intentional Prompting
+=============================================================================
+
+This document demonstrates how intentional prompting with AI tools led to significant
+improvements in code quality, functionality, and user experience.
+
+=============================================================================
+EXAMPLE 1: Weather Data Retrieval Function
+=============================================================================
+
+BEFORE (Initial AI-Generated Code):
+-----------------------------------
+def get_weather_data(location, forecast_days=5):
+    weather = get_weather(location=location, format="json")
+    return weather
+
+Problems with this version:
+❌ No error handling
+❌ Returns raw API response instead of structured data
+❌ Doesn't validate forecast_days parameter
+❌ No extraction of specific fields needed
+❌ Doesn't handle error strings from API
+❌ No documentation
+
+-----------------------------------
+
+INTENTIONAL PROMPTING APPLIED:
+1. "Add validation for forecast_days parameter (1-5)"
+2. "Extract and structure specific fields: current conditions, area info, forecast"
+3. "Handle error responses that are strings starting with 'Error:'"
+4. "Return None on failure instead of raw error"
+5. "Add comprehensive docstring"
+6. "Use try-except for robust error handling"
+
+-----------------------------------
+
+AFTER (Refined Code):
+---------------------
+def get_weather_data(location, forecast_days=5):
+    """
+    Retrieve weather data for a specified location.
+    
+    Args:
+        location (str): City or location name
+        forecast_days (int): Number of days to forecast (1-5)
+        
+    Returns:
+        dict: Weather data including current conditions and forecast
+              Returns None if an error occurs
+    """
+    try:
+        # Validate forecast_days parameter
+        forecast_days = max(1, min(5, forecast_days))
+        
+        # Fetch weather data
+        weather_response = get_weather(
+            location=location,
+            format="json",
+            units="m"
+        )
+        
+        # Check for error response
+        if isinstance(weather_response, str) and weather_response.startswith("Error:"):
+            print(f"❌ {weather_response}")
+            return None
+        
+        # Structure the data
+        weather_data = {
+            'location': location,
+            'current_condition': None,
+            'forecast': [],
+            'area_info': None
+        }
+        
+        # Extract current conditions
+        if hasattr(weather_response, 'current_condition') and weather_response.current_condition:
+            current = weather_response.current_condition[0]
+            weather_data['current_condition'] = {
+                'temp_C': current.temp_C,
+                'temp_F': current.temp_F,
+                'feels_like_C': current.FeelsLikeC,
+                # ... (all relevant fields extracted)
+            }
+        
+        # Extract area information
+        if hasattr(weather_response, 'nearest_area') and weather_response.nearest_area:
+            area = weather_response.nearest_area[0]
+            weather_data['area_info'] = {
+                'area_name': area.areaName[0].value if area.areaName else "Unknown",
+                # ... (proper extraction)
+            }
+        
+        # Extract and structure forecast data
+        if hasattr(weather_response, 'weather') and weather_response.weather:
+            for day in weather_response.weather[:forecast_days]:
+                # ... (detailed extraction with hourly data)
+        
+        return weather_data
+    
+    except Exception as e:
+        print(f"❌ Error retrieving weather data: {str(e)}")
+        return None
+
+Improvements achieved:
+✅ Parameter validation prevents API errors
+✅ Structured output is easy to work with
+✅ Comprehensive error handling
+✅ Extracts only needed fields
+✅ Handles multiple error scenarios
+✅ Well-documented with docstring
+✅ Safe attribute access with hasattr()
+
+=============================================================================
+EXAMPLE 2: Temperature Visualization Function
+=============================================================================
+
+BEFORE (Initial AI-Generated Code):
+-----------------------------------
+def create_temperature_visualisation(weather_data, output_type='display'):
+    dates = []
+    temps = []
+    for day in weather_data['forecast']:
+        dates.append(day['date'])
+        temps.append(day['max_temp_C'])
+    
+    plt.plot(dates, temps)
+    plt.show()
+
+Problems with this version:
+❌ Plots only max temperature (missing min and avg)
+❌ No colors or visual styling
+❌ Dates as strings instead of datetime objects
+❌ No labels, title, or legend
+❌ No error handling
+❌ Poor readability
+
+-----------------------------------
+
+INTENTIONAL PROMPTING APPLIED:
+1. "Plot max, min, AND average temperatures with distinct colors"
+2. "Use datetime objects for proper date formatting"
+3. "Add filled area between min and max"
+4. "Include grid, legend, and formatted axis labels"
+5. "Use matplotlib.dates for professional date formatting"
+6. "Add markers on data points"
+7. "Make title dynamic with location name"
+8. "Handle missing data gracefully"
+
+-----------------------------------
+
+AFTER (Refined Code):
+---------------------
+def create_temperature_visualisation(weather_data, output_type='display'):
+    """
+    Create visualisation of temperature data.
+    
+    Args:
+        weather_data (dict): The processed weather data
+        output_type (str): Either 'display' to show in notebook or 'figure' to return the figure
+        
+    Returns:
+        If output_type is 'figure', returns the matplotlib figure object
+        Otherwise, displays the visualisation in the notebook
+    """
+    if not weather_data or not weather_data['forecast']:
+        print("❌ No forecast data available for visualization")
+        return None
+    
+    # Extract data for plotting
+    dates = []
+    max_temps = []
+    min_temps = []
+    avg_temps = []
+    
+    for day in weather_data['forecast']:
+        dates.append(datetime.strptime(day['date'], '%Y-%m-%d'))
+        max_temps.append(float(day['max_temp_C']))
+        min_temps.append(float(day['min_temp_C']))
+        avg_temps.append(float(day['avg_temp_C']))
+    
+    # Create the figure
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    # Plot with distinct colors and markers
+    ax.plot(dates, max_temps, marker='o', linewidth=2, label='Max Temperature', color='#FF6B6B')
+    ax.plot(dates, avg_temps, marker='s', linewidth=2, label='Avg Temperature', color='#4ECDC4')
+    ax.plot(dates, min_temps, marker='v', linewidth=2, label='Min Temperature', color='#95E1D3')
+    
+    # Fill between max and min
+    ax.fill_between(dates, min_temps, max_temps, alpha=0.2, color='#4ECDC4')
+    
+    # Formatting
+    ax.set_xlabel('Date', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Temperature (°C)', fontsize=12, fontweight='bold')
+    
+    location_name = weather_data['area_info']['area_name'] if weather_data['area_info'] else weather_data['location']
+    ax.set_title(f'Temperature Forecast for {location_name}', fontsize=14, fontweight='bold', pad=20)
+    
+    # Professional date formatting
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    ax.xaxis.set_major_locator(mdates.DayLocator())
+    plt.xticks(rotation=45)
+    
+    # Grid and legend
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(loc='best', framealpha=0.9)
+    
+    plt.tight_layout()
+    
+    if output_type == 'figure':
+        return fig
+    else:
+        plt.show()
+        return None
+
+Improvements achieved:
+✅ Shows complete temperature range (max, min, avg)
+✅ Professional color scheme
+✅ Proper datetime handling
+✅ Filled area for visual context
+✅ Clear labels and title with location
+✅ Grid for easy reading
+✅ Legend with descriptions
+✅ Markers for data points
+✅ Handles missing data
+✅ Configurable output type
+
+=============================================================================
+EXAMPLE 3: Natural Language Response Generation
+=============================================================================
+
+BEFORE (Initial AI-Generated Code):
+-----------------------------------
+def generate_weather_response(parsed_question, weather_data):
+    if 'temperature' in parsed_question['weather_attributes']:
+        temp = weather_data['current_condition']['temp_C']
+        return f"The temperature is {temp}°C"
+    return "Weather information not available"
+
+Problems with this version:
+❌ Only handles temperature queries
+❌ No time period consideration
+❌ No contextual advice
+❌ Boring, robotic responses
+❌ Doesn't handle multiple attributes
+❌ No recommendations or insights
+
+-----------------------------------
+
+INTENTIONAL PROMPTING APPLIED:
+1. "Handle different time periods: current, tomorrow, this week"
+2. "Provide recommendations for umbrella questions"
+3. "Give activity advice based on weather conditions"
+4. "Use friendly, conversational language with emojis"
+5. "Handle multiple attributes in one question"
+6. "Adapt response based on question type"
+7. "Provide actionable insights, not just data"
+
+-----------------------------------
+
+AFTER (Refined Code - Excerpt):
+-------------------------------
+def generate_weather_response(parsed_question, weather_data):
+    """Generate a natural language response to a weather question."""
+    
+    if not weather_data:
+        return "I'm sorry, I couldn't retrieve weather data for that location."
+    
+    location_name = weather_data['area_info']['area_name'] if weather_data['area_info'] else 'your location'
+    time_period = parsed_question['time_period']
+    attributes = parsed_question['weather_attributes']
+    
+    response_parts = []
+    
+    # Handle different time periods contextually
+    if time_period == 'current':
+        current = weather_data['current_condition']
+        if current:
+            if 'umbrella' in attributes:
+                if float(current['precip_mm']) > 0:
+                    response_parts.append(f"It's currently raining with {current['precip_mm']} mm of precipitation.")
+                    response_parts.append("Yes, you should bring an umbrella! ☔")
+                else:
+                    response_parts.append("There's no precipitation right now.")
+                    response_parts.append("No umbrella needed at the moment! ☀️")
+    
+    elif time_period == 'tomorrow' and weather_data['forecast']:
+        tomorrow = weather_data['forecast'][1] if len(weather_data['forecast']) > 1 else weather_data['forecast'][0]
+        
+        if 'outdoor' in attributes:
+            avg_temp = float(tomorrow['avg_temp_C'])
+            max_rain = max([float(h['chance_of_rain']) for h in tomorrow['hourly']])
+            
+            if 15 <= avg_temp <= 25 and max_rain < 30:
+                response_parts.append("Tomorrow looks great for outdoor activities! The weather should be pleasant. 🌤️")
+            elif max_rain > 60:
+                response_parts.append("Tomorrow might not be ideal for outdoor activities due to high rain chances. Have a backup plan! 🌧️")
+            else:
+                response_parts.append("Tomorrow should be okay for outdoor activities, though conditions may not be perfect.")
+    
+    return " ".join(response_parts) if response_parts else "Here's the current weather summary..."
+
+Improvements achieved:
+✅ Handles multiple time periods intelligently
+✅ Provides actionable recommendations
+✅ Uses friendly, conversational language
+✅ Includes helpful emojis
+✅ Gives advice, not just data
+✅ Considers multiple factors for recommendations
+✅ Adapts to question context
+✅ Makes weather information useful
+
+=============================================================================
+KEY LESSONS LEARNED
+=============================================================================
+
+1. START SIMPLE, ITERATE DELIBERATELY
+   - Begin with basic functionality
+   - Identify specific gaps
+   - Request targeted improvements
+   - Build complexity gradually
+
+2. BE SPECIFIC IN PROMPTS
+   - "Add error handling" → ❌ Too vague
+   - "Add try-except block and check for None values" → ✅ Specific
+
+3. FOCUS ON USER EXPERIENCE
+   - Technical correctness isn't enough
+   - Consider readability, usability, and helpfulness
+   - Add visual appeal and friendly language
+
+4. TEST AND VALIDATE
+   - Request edge case handling explicitly
+   - Verify each improvement works
+   - Ensure components integrate properly
+
+5. DOCUMENT THE PROCESS
+   - Keep track of what prompted each improvement
+   - Understand why changes were needed
+   - Learn from the iterative process
+
+=============================================================================
+
+The intentional prompting approach transformed basic, functional code into 
+professional, user-friendly, robust software. Each iteration addressed specific
+weaknesses and added specific improvements, resulting in a polished final product.
