@@ -1,0 +1,19 @@
+conversation7
+
++++
+Tool: ChatGPT
+Date: 2025-10-25
++++
+
+
+Me: Mate, I’m trying to show the sunrise and the sunset, but the time looks strange! It is showing in ISO format.
+AI: That’s normal for API data. You can convert it with datetime.fromisoformat() and then format it with strftime().
+
+Me: Mate, give me an example?
+AI: Sure — try this:
+    from datetime import datetime
+    t = datetime.fromisoformat("2025-10-26T05:43:00")
+    print(t.strftime("%H:%M"))
+
+Me: Wow mate, now it showing correctly “05:43” 
+AI: Great! You can reuse that same function for both sunrise and sunset values.

@@ -1,0 +1,16 @@
+conversation2
+
+***
+Tool: ChatGPT
+Date: 2025-10-21
+***
+
+
+Me: Mate, I’m trying to get the temperature value from the weather API, but data['temperature'] it is not working out?
+AI: The correct path might depend on the API structure. Try accessing data['current_weather']['temperature'].
+
+Me: Ah okay, mate. It means it’s inside current weather function?
+AI: Yes, exactly. You can print(data.keys()) first to see what’s inside each dictionary level.
+
+Me: Thanks, mate. Now I can do it correctly.
+AI: Perfect. You can also add 'units=m' in your request to make sure it’s metric.

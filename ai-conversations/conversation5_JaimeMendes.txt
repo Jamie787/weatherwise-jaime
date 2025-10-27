@@ -1,0 +1,18 @@
+conversation5
+
+***
+Tool: ChatGPT
+Date: 2025-10-24
+***
+
+
+Me: Mate, wish and need to compare the two cities (Perth and Lisbon). How does it work to show the temperature, wind, and sunrise/sunset?
+AI: You can store the city names in a list and use a for loop to call the API for each one.
+
+Me: Do you mean something like this? for city in ['Perth', 'Lisbon']?
+AI: Exactly. Then print each city’s results separately for better readability.
+
+Me: Done, mate. It is working for both cities.
+AI: Nice work — that’s a clean way to handle multiple API calls.
+
+Me: Ok, thanks mate.

@@ -1,0 +1,16 @@
+conversation6
+
+***
+Tool: ChatGPT
+Date: 2025-10-24
+***
+
+
+Me: Mate, help me out. Showing this error “IndentationError: unexpected indent” in Colab. How to fix it?
+AI: It usually happens when your code uses a mix of spaces and tabs for indentation. Python requires consistency.
+
+Me: But what is wrong? I can’t mix them in the same file?
+AI: Exactly. You should use only spaces, preferably four per level. In Colab, you can select all and choose “Convert indentations to spaces.”
+
+Me: Ah, ok mate. That’s why some cells ran fine and others failed. I’ll fix it all.
+AI: Perfect. Once all indents are consistent, the errors will disappear.

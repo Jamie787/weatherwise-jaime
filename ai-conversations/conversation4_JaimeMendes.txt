@@ -1,0 +1,16 @@
+conversation4
+
++++
+Tool: ChatGPT
+Date: 2025-10-22
++++
+
+
+Me: Mate, my code keeps printing the same error message twice when I call the function?-see above.
+AI: That usually happens if both the main function and the calling cell print the same message.
+
+Me: I’m using if isinstance(weather_response, str)... maybe it’s printing twice there?
+AI: Try adding a check like if weather_response.startswith("Error:"): return None after printing once.
+
+Me: Mate, dome. It is working. Now the error shows only one time. Many thanks. :)
+AI: Perfect. Clean and readable error handling.

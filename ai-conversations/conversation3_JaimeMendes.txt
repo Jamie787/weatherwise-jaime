@@ -1,0 +1,16 @@
+conversation3
+
+***
+Tool: ChatGPT
+Date: 2025-10-22
+***
+
+
+Me: Mate, I am typing the name of a city, but nothing happens. The code is running, but no result?
+AI: That might mean the city variable isn’t being passed into your API URL or function parameters.
+
+Me: Ah, Ok. I forgot to include it in get_weather(location=location)?!
+AI: Exactly. Once you include the city name variable, the API will know what location to fetch.
+
+Me: Done, mate! Thanks. Now it showing the correct data when I type a city. Example Perth or Lisbon :)
+AI: Great — now your function works dynamically with user input.

@@ -1,0 +1,18 @@
+conversation1
+
++++
+Tool: ChatGPT
+Date: 2025-10-20
++++
+
+Me: Mate, help me out. I ran my function (see it) in Colab, but nothing shows up in the output. What is wrong?
+AI: You might be missing a print() statement. In Colab, the output only appears if you print it or return it explicitly.
+
+Me: Ok, mate. So, if I just call the function name, it won’t show anything?
+AI: Exactly. Try adding print(your_function()) or print(variable_name) inside your cell.
+
+Me: Mate, done. I can see the results now, thanks. :)
+AI: Great! Always re-run the cell after adding print statements to refresh the output.
+
+
+
